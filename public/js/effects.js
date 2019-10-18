@@ -49,13 +49,13 @@ function gotStream(stream) {
     }
     audioInput.connect(dryGain);
     audioInput.connect(effectInput);
-    audioInput.connect(analyser1);
+    //audioInput.connect(analyser1);
     if(currentEffectNode != null)
 	    audioInput.connect( currentEffectNode );
     crossfade(1.0);
     
-    cancelAnalyserUpdates();
-    updateAnalysers();
+    //cancelAnalyserUpdates();
+    //updateAnalysers();
 }
 
 function startSound() {
@@ -64,8 +64,8 @@ function startSound() {
   	source.buffer = sample; 
   	initNoStream(source);
     source.start(0);
-    cancelAnalyserUpdates();
-    updateAnalysers();
+    //cancelAnalyserUpdates();
+    //updateAnalysers();
 
 }
 
@@ -95,13 +95,13 @@ function initNoStream(src) {
     // create mix gain nodes
     audioInput.connect(dryGain);
     audioInput.connect(effectInput);
-    audioInput.connect(analyser1);
+    //audioInput.connect(analyser1);
     if(currentEffectNode != null)
 	    audioInput.connect( currentEffectNode );
     crossfade(1.0);
     
-    cancelAnalyserUpdates();
-    updateAnalysers();
+    //cancelAnalyserUpdates();
+    //updateAnalysers();
 }
 
 function loadSound(filename) {
@@ -146,7 +146,7 @@ function initContext() {
     window.AudioContext = window.AudioContext || window.webkitAudioContext;
 	audioContext = new AudioContext();	
 
-	initVizu();
+	//initVizu();
 
     outputMix = audioContext.createGain();
     dryGain = audioContext.createGain();
@@ -155,7 +155,7 @@ function initContext() {
 	dryGain.connect(outputMix);
     wetGain.connect(outputMix);
     outputMix.connect( audioContext.destination);
-    outputMix.connect(analyser2);
+    //outputMix.connect(analyser2);
     
     
 }
@@ -215,7 +215,7 @@ function impulseResponse( duration, decay, reverse ) {
 
 // VISUALIZER
 
-
+/*
 var rafID = null;
 var analyser1;
 var analyserView1;
@@ -252,3 +252,4 @@ function initVizu() {
     analyserView1.setAnalysisType(ANALYSISTYPE_SONOGRAM);
     analyserView2.setAnalysisType(ANALYSISTYPE_SONOGRAM);
 }
+*/
