@@ -11,48 +11,82 @@
 	<script src="js/effect.js"></script>
 	<script src="js/effects.js"></script>
 
+	<!-- Visualizer stuff -->
+	<script src="js/visualizer/events.js"></script>
+
+	<!-- WebGL stuff -->
+	<script src="js/visualizer/base.js"></script>
+	<script src="js/visualizer/cameracontroller.js"></script>
+
+	<!-- TODO(kbr): remove this dependency -->
+	<script src="js/visualizer/matrix4x4.js"></script>
+
+	<!-- Visualizer GL library -->
+	<script src="js/visualizer/visualizer.js"></script>
+	<script src="js/visualizer/shader.js"></script>
+
 	<style>
 	body {
-		font: 14pt Avenir Next, sans-serif;
-		background: black;
-		color: lightgray;
+		font: 10pt Avenir Next, sans-serif;
+		background: white;
+		color: black;
 	}
 	select {
-		font: 14pt Avenir Next, sans-serif;
+		font: 10pt Avenir Next, sans-serif;
 	}
-	button {
-		font: 14pt Avenir Next, sans-serif;
+	input, button {
+		font: 10pt Avenir Next, sans-serif;
+		margin: 5px;
 	}
 	#effectMix {
-		padding-top: 12px;
+		/*padding-top: 12px;*/
 	}
 	#arranger {
 		width:750px;
 		margin: 25px auto;
 		text-align: center;
 	}
+	#mix {
+		position: relative;
+		top: 13px;
+	}
+	#view1, #view2 {
+		margin: 10px;
+	}
 	</style>
 </head>
-<body>
-Todo:<br/>
-<ul>
-<li>clean load buffers & connections</li>
-<li>dry/wet no clic</li>
-<li>visualiser l'entrée/sortie</li>
-</ul>
-    
+<body>    
 	<div id="arranger">
 		<button ID="load">Load</button>
 		<button ID="start1" disabled>Start Voice</button>
 		<button ID="start2" disabled>Start Guitar</button>
 		<button ID="startStream" disabled>Start Stream</button>
-		<button ID="stop" disabled>Stop</button>
-		<button ID="update">Update List</button>
+		<button ID="stop" disabled>Stop</button><br/>
+		<canvas id="view1" width="600" height="160"></canvas>
 		<div id="effectMix">
-			IR: <select id='IR'></select><br/>
-			Effect Mix: <input type="range" min="0.0" max="1.0" step="0.01" value="1.0" style="height: 20px; width: 200px;" onInput="crossfade( event.target.value );"><br/>
+			IR:&nbsp;&nbsp;&nbsp;<select id='IR'></select><button ID="update">Update List</button><br/>
+			Dry&nbsp;&nbsp;&nbsp;<input type="range" id='mix' min="0.0" max="1.0" step="0.01" value="1.0" style="height: 20px; width: 200px;" onInput="crossfade( event.target.value );">&nbsp;&nbsp;&nbsp;Wet
+		</div>
+		<canvas id="view2" width="600" height="160"></canvas><br/>
+		<div>
+			<input type="radio" name="radioSet" value="data" 
+			onmousedown="analyserView1.setAnalysisType(ANALYSISTYPE_FREQUENCY); analyserView2.setAnalysisType(ANALYSISTYPE_FREQUENCY);">Frequency
+			<input type="radio" name="radioSet" value="data" checked="checked"
+			onmousedown="analyserView1.setAnalysisType(ANALYSISTYPE_SONOGRAM); analyserView2.setAnalysisType(ANALYSISTYPE_SONOGRAM);">Sonogram
+			<input type="radio" name="radioSet" value="data" 
+			onmousedown="analyserView1.setAnalysisType(ANALYSISTYPE_3D_SONOGRAM); analyserView2.setAnalysisType(ANALYSISTYPE_3D_SONOGRAM);">3D Sonogram
+			<input type="radio" name="radioSet" value="data" 
+			onmousedown="analyserView1.setAnalysisType(ANALYSISTYPE_WAVEFORM); analyserView2.setAnalysisType(ANALYSISTYPE_WAVEFORM);">Waveform
 		</div>
 	</div>
+	<div>
+		Todo:<br/>
+		<ul>
+		<li>clean load buffers & connections</li>
+		<li>dry/wet no clic</li>
+		</ul>
+	</div>
+
 	<script src="js/jquery-3.4.1.min.js"></script>
 	<script>
 	

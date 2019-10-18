@@ -49,9 +49,13 @@ function gotStream(stream) {
     }
     audioInput.connect(dryGain);
     audioInput.connect(effectInput);
+    audioInput.connect(analyser1);
     if(currentEffectNode != null)
 	    audioInput.connect( currentEffectNode );
     crossfade(1.0);
+    
+    cancelAnalyserUpdates();
+    updateAnalysers();
 }
 
 function startSound() {
@@ -60,6 +64,9 @@ function startSound() {
   	source.buffer = sample; 
   	initNoStream(source);
     source.start(0);
+    cancelAnalyserUpdates();
+    updateAnalysers();
+
 }
 
 function stop() {
@@ -80,17 +87,21 @@ function initNoStream(src) {
     console.log('initNoStream');
     audioInput = convertToMono( src );
 
-    if (useFeedbackReduction) {
+	/*if (useFeedbackReduction) {
         audioInput.connect( createLPInputFilter() );
         audioInput = lpInputFilter;
         
-    }
+    }//*/
     // create mix gain nodes
     audioInput.connect(dryGain);
     audioInput.connect(effectInput);
+    audioInput.connect(analyser1);
     if(currentEffectNode != null)
 	    audioInput.connect( currentEffectNode );
     crossfade(1.0);
+    
+    cancelAnalyserUpdates();
+    updateAnalysers();
 }
 
 function loadSound(filename) {
@@ -135,6 +146,8 @@ function initContext() {
     window.AudioContext = window.AudioContext || window.webkitAudioContext;
 	audioContext = new AudioContext();	
 
+	initVizu();
+
     outputMix = audioContext.createGain();
     dryGain = audioContext.createGain();
     wetGain = audioContext.createGain();
@@ -142,6 +155,8 @@ function initContext() {
 	dryGain.connect(outputMix);
     wetGain.connect(outputMix);
     outputMix.connect( audioContext.destination);
+    outputMix.connect(analyser2);
+    
     
 }
 
@@ -195,4 +210,45 @@ function impulseResponse( duration, decay, reverse ) {
       impulseR[i] = (Math.random() * 2 - 1) * Math.pow(1 - n / length, decay);
     }
     return impulse;
+}
+
+
+// VISUALIZER
+
+
+var rafID = null;
+var analyser1;
+var analyserView1;
+
+window.requestAnimationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame;
+window.cancelAnimationFrame = window.cancelAnimationFrame || window.webkitCancelAnimationFrame;
+
+
+function cancelAnalyserUpdates() {
+    if (rafID)
+        window.cancelAnimationFrame( rafID );
+    rafID = null;
+}
+
+function updateAnalysers(time) {
+    analyserView1.doFrequencyAnalysis( analyser1 );
+    analyserView2.doFrequencyAnalysis( analyser2 );
+    
+    rafID = window.requestAnimationFrame( updateAnalysers );
+}
+
+function initVizu() {
+    o3djs.require('o3djs.shader');
+
+    analyser1 = audioContext.createAnalyser();
+    analyser1.fftSize = 1024;
+    analyser2 = audioContext.createAnalyser();
+    analyser2.fftSize = 1024;
+
+    analyserView1 = new AnalyserView("view1");
+    analyserView1.initByteBuffer( analyser1 );
+    analyserView2 = new AnalyserView("view2");
+    analyserView2.initByteBuffer( analyser2 );
+    analyserView1.setAnalysisType(ANALYSISTYPE_SONOGRAM);
+    analyserView2.setAnalysisType(ANALYSISTYPE_SONOGRAM);
 }

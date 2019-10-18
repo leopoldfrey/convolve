@@ -30,8 +30,13 @@ app.get('/index.html',function(req,res){
 
 /*----------- Static Files -----------*/
 app.use('/js', express.static('public/js'));
+app.use('/js/visualizer', express.static('public/js/visualizer'));
+app.use('/shaders', express.static('public/shaders'));
 app.use('/sounds', express.static('public/sounds'));
-app.use('/sounds', serveIndex(__dirname + '/sounds'));
+app.use('/sounds', serveIndex('public/sounds'));
+app.use('/shaders', serveIndex('public/shaders'));
+app.use('/js', serveIndex('public/js'));
+app.use('/js/visualizer', serveIndex('public/js/visualizer'));
 
 listSoundFiles();
 
