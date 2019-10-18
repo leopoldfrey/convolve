@@ -14,12 +14,7 @@ var sample = null;
 var source = null;
 var input = null;
 
-var constraints = 
-{
-  audio: {
-      optional: [{ echoCancellation: false }]
-  }
-};
+var constraints = { audio: true };
 
 function convertToMono( input ) {
 	console.log('Convert to mono');
@@ -156,8 +151,9 @@ function startStream() {
     if (!navigator.getUserMedia)
         navigator.getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
-    if (!navigator.getUserMedia)
+	if (!navigator.getUserMedia)
         return(alert("Error: getUserMedia not supported!"));
+	//*/
 
     navigator.getUserMedia(constraints, gotStream, function(e) {
             alert('Error getting audio');
