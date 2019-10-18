@@ -1,0 +1,142 @@
+<!doctype html>
+<html>
+<head>
+	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="0" />
+	<meta charset="utf-8">
+	<title>Convolution</title>
+    <!--ascript src="http://cwilso.github.io/AudioContext-MonkeyPatch/AudioContextMonkeyPatch.js"></ascript-->
+
+	<script src="js/effect.js"></script>
+	<script src="js/effects.js"></script>
+
+	<style>
+	body {
+		font: 14pt Avenir Next, sans-serif;
+		background: black;
+		color: lightgray;
+	}
+	select {
+		font: 14pt Avenir Next, sans-serif;
+	}
+	button {
+		font: 14pt Avenir Next, sans-serif;
+	}
+	#effectMix {
+		padding-top: 12px;
+	}
+	#arranger {
+		width:750px;
+		margin: 25px auto;
+		text-align: center;
+	}
+	</style>
+</head>
+<body>
+Todo:<br/>
+<ul>
+<li>clean load buffers & connections</li>
+<li>dry/wet no clic</li>
+<li>visualiser l'entrée/sortie</li>
+</ul>
+    
+	<div id="arranger">
+		<button ID="load">Load</button>
+		<button ID="start1" disabled>Start Voice</button>
+		<button ID="start2" disabled>Start Guitar</button>
+		<button ID="startStream" disabled>Start Stream</button>
+		<button ID="stop" disabled>Stop</button>
+		<button ID="update">Update List</button>
+		<div id="effectMix">
+			IR: <select id='IR'></select><br/>
+			Effect Mix: <input type="range" min="0.0" max="1.0" step="0.01" value="1.0" style="height: 20px; width: 200px;" onInput="crossfade( event.target.value );"><br/>
+		</div>
+	</div>
+	<script src="js/jquery-3.4.1.min.js"></script>
+	<script>
+	
+		function getSounds() {
+			$.post("/getSounds", function(data){
+            	files = JSON.parse(data);
+				files.forEach(function(e) {
+					$('#IR').append('<option value='+e+'>'+e+'</option>');
+					console.log("IR : "+e);
+				})
+        	});
+		}
+	
+        $(window).on('load', function() {
+        	console.log('window.onLoad');
+       		getSounds();
+       	});
+       	
+       	$('#load').on('click', function() {
+       		console.log('#load.onClick');
+       		initContext();
+       		//loadSound('guitar_noise.wav');
+    		loadSound('proust_short.wav');
+    
+    		// TODO replace timeout et attendre la fin de l'autre
+    
+			setTimeout(function(){
+				loadIR('Arundel_Nave.wav');
+				setTimeout(function(){
+        			console.log("HERE!!!!");
+        			$('#start1').prop('disabled', false);
+        			$('#start2').prop('disabled', false);
+        			$('#startStream').prop('disabled', false);
+        			$('#stop').prop('disabled', false);
+        		}, 500);
+			}, 2000);
+       	});
+        
+        $('#update').on('click', function() {
+        	console.log('#update.onClick');
+       		$.post("/updateSounds", function(data){
+            	console.log("updateSounds : "+data);
+        	});
+        	
+        	setTimeout(function(){
+        		getSounds();
+        	}, 1000);
+        	
+        });
+         
+        $('#start1').on('click', function() {
+        	console.log('#start.onClick');
+       		stop();
+       		loadSound('proust_short.wav');
+    		setTimeout(function(){
+        		startSound();
+        	}, 2000);
+        });
+        
+        $('#start2').on('click', function() {
+        	console.log('#start.onClick');
+       		stop();
+       		loadSound('guitar_noise.wav');
+    		setTimeout(function(){
+        		startSound();
+        	}, 2000);
+        });
+        
+        $('#startStream').on('click',function() {
+        	console.log('#startStream.onClick');
+        	stop();
+        	startStream();
+        });
+        
+        $('#stop').on('click', function() {
+        	console.log('#stop.onClick');
+       		stop();
+        });
+        
+        $('#IR').on('change', function() {
+        	console.log('#IR.onChange '+$( "#IR" ).val());
+        	loadIR($( "#IR" ).val());
+        });
+        
+	</script>
+</body>
+</html>

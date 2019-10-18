@@ -1,0 +1,14 @@
+{
+  "name": "convole",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "fs": "0.0.1-security",
+    "http": "0.0.0",
+    "serve-index": "^1.9.1",
+    "ws": "^7.1.2"
+  }
+}
